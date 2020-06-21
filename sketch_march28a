@@ -3,17 +3,13 @@
   #include <WiFi.h>
   #include <ESPAsyncWebServer.h>
   #include <SPIFFS.h>
-#else
   #include <Arduino.h>
   #include <ESP32WiFi.h>
   #include <Hash.h>
   #include <ESPAsyncTCP.h>
   #include <ESPAsyncWebServer.h>
   #include <FS.h>
-#endif
-#include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <BME680.h>
+  #include <BME680.h>
 
 /*#include <SPI.h>
 #define BME_SDA 34
