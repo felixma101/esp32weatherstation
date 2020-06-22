@@ -1,4 +1,4 @@
-// Import required libraries
+// Import libraries
 #ifdef ESP32
   #include <WiFi.h>
   #include <ESPAsyncWebServer.h>
@@ -11,28 +11,25 @@
   #include <FS.h>
   #include <BME680.h>
 
-/*#include <SPI.h>
+// Define BME680 SDA and SCL data ports
 #define BME_SDA 35
 #define BME_SCL 34
 
-Adafruit_BME680 bme; // I2C
-//Adafruit_BME680 bme(BME_CS); // hardware SPI
-//Adafruit_BME680 bme(BME_CS, BME_MOSI, BME_MISO, BME_SCK); // software SPI
+// BME680 global variable
+BME680 bme;
 
-// Replace with your network credentials
+// ESP32 networking details
 const char* ssid = "OWN_SSID";
 const char* password = "OWN_PASSWORD";
 
-// Create AsyncWebServer object on port 80
+// Create AsyncWebServer object
 AsyncWebServer server(80);
 
+// BME680 temperature reading
 String readBME680Temperature() {
-  // Read temperature as Celsius (the default)
   float t = bme.readTemperature();
-  // Convert temperature to Fahrenheit
-  //t = 1.8 * t + 32;
   if (isnan(t)) {    
-    Serial.println("Failed to read from BME280 sensor!");
+    Serial.println("Failed to read from BME680 sensor!");
     return "";
   }
   else {
@@ -41,10 +38,11 @@ String readBME680Temperature() {
   }
 }
 
+// BME680 humidity reading
 String readBME680Humidity() {
   float h = bme.readHumidity();
   if (isnan(h)) {
-    Serial.println("Failed to read from BME280 sensor!");
+    Serial.println("Failed to read from BME680 sensor!");
     return "";
   }
   else {
@@ -53,10 +51,11 @@ String readBME680Humidity() {
   }
 }
 
+// BME680 air pressure reading
 String readBME680Pressure() {
   float p = bme.readPressure() / 100.0F;
   if (isnan(p)) {
-    Serial.println("Failed to read from BME280 sensor!");
+    Serial.println("Failed to read from BME680 sensor!");
     return "";
   }
   else {
@@ -65,26 +64,23 @@ String readBME680Pressure() {
   }
 }
 
+// Begin void setup 
 void setup(){
-  // Serial port for debugging purposes
   Serial.begin(115200);
-  
   bool status; 
-  // default settings
-  // (you can also pass in a Wire library object like &Wire2)
   status = bme.begin(0x76);  
   if (!status) {
-    Serial.println("Could not find a valid BME280 sensor, check wiring!");
+    Serial.println("Could not find a valid BME680 sensor, check wiring!");
     while (1);
   }
 
-  // Initialize SPIFFS
+  // Initialise SPIFFS
   if(!SPIFFS.begin()){
     Serial.println("An Error has occurred while mounting SPIFFS");
     return;
   }
 
-  // Connect to Wi-Fi
+  // Connect to Wifi/IP Address
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
@@ -98,12 +94,18 @@ void setup(){
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/index.html");
   });
+  
+  // Initialise Temperature Details to Webpage
   server.on("/temperature", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/plain", readBME280Temperature().c_str());
   });
+  
+  // Initialise humidity details to webpage
   server.on("/humidity", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/plain", readBME280Humidity().c_str());
   });
+  
+  // Initialise air pressure details to webpage
   server.on("/pressure", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/plain", readBME280Pressure().c_str());
   });
