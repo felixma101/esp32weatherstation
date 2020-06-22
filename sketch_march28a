@@ -12,8 +12,8 @@
   #include <BME680.h>
 
 /*#include <SPI.h>
-#define BME_SDA 34
-#define BME_SCL 36
+#define BME_SDA 35
+#define BME_SCL 34
 
 Adafruit_BME680 bme; // I2C
 //Adafruit_BME680 bme(BME_CS); // hardware SPI
